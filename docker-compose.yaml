@@ -1,0 +1,24 @@
+version: "3.1"
+
+services:
+    node:
+        container_name: ozunaapp
+        restart: always
+        ports: 
+            - "4000:8000"
+        build: . 
+        links:
+            - db
+        volumes: 
+            - .:/usr/src/app         
+
+    db:
+        container_name: ozunadb
+        image: mongo
+        ports:
+            - 27017:27017
+        environment:
+            MONGO_INITDB_DATABASE: ozuna
+        volumes:
+            - ./data/db:/data/db
+    
