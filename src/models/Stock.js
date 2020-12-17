@@ -12,17 +12,7 @@ const stockSchema = new Schema({
     trim: true,
     type: String,
   },
-  sizes: [
-    {
-      size: {
-      type: String,
-      },
-      available: {
-        type: Boolean,
-        default: true
-      }
-    },
-  ] ,
+
   principal: {
     required: true,
     type: Boolean,
@@ -33,17 +23,25 @@ const stockSchema = new Schema({
     type: Boolean,
     default: true
   },
-  images: [
-    {
-      required: true,
-      type: String,
-    },
-  ],
   product: {
     type: Schema.Types.ObjectId,
     ref: "Product",
     required: true,
   },
+},  { toJSON: { virtuals: true } });
+
+stockSchema.virtual('images', {
+  ref: 'StockImage',
+  localField: '_id',
+  foreignField: 'stock',
+  justOne: false,
+});
+
+stockSchema.virtual('sizes', {
+  ref: 'Size',
+  localField: '_id',
+  foreignField: 'stock',
+  justOne: false,
 });
 
 stockSchema.plugin(uniqueValidator);
