@@ -2,11 +2,6 @@ const { Schema, model } = require("mongoose");
 var uniqueValidator = require("mongoose-unique-validator");
 
 const stockSchema = new Schema({
-  price: {
-    required: false,
-    trim: true,
-    type: Number,
-  },
   color: {
     required: true,
     trim: true,
@@ -18,11 +13,6 @@ const stockSchema = new Schema({
     type: Boolean,
     default: false
   },
-  empty: {
-    required: true,
-    type: Boolean,
-    default: true
-  },
   product: {
     type: Schema.Types.ObjectId,
     ref: "Product",
@@ -30,7 +20,7 @@ const stockSchema = new Schema({
   },
 },  { toJSON: { virtuals: true } });
 
-stockSchema.virtual('images', {
+stockSchema.virtual('stockimages', {
   ref: 'StockImage',
   localField: '_id',
   foreignField: 'stock',

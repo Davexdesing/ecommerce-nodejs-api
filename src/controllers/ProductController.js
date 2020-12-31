@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
 const Category = require("../models/Category");
 const urlSlug = require("url-slug");
+const { success, error } = require("../network/response");
 const { upload, destroyImage } = require("../traits/upload");
 
 const all = async (req, res) => {
@@ -11,29 +12,46 @@ const all = async (req, res) => {
     let limited = req.query.limited || 15;
     limited = Number(limited);
     let product = await Product.find({})
-      .populate("category")
+      .populate([
+        "category",
+        {
+          path: "stocks",
+          model: "Stock",
+          populate: {
+            path: "stockimages",
+            model: "StockImage",
+          },
+        },
+        {
+          path: "stocks",
+          model: "Stock",
+          populate: {
+            path: "sizes",
+            model: "Size",
+          },
+        },
+      ])
       .skip(from)
       .limit(limited)
       .exec();
     let count = await Product.count();
 
-    res.json({
-      data: product,
+    success(res, "", 200, {
+      product: product,
       count: count,
     });
-  } catch (err) {
-    res.status(400).json(err);
-  }
+  } catch (err) {}
 };
 
 const create = async (req, res) => {
   try {
-    const img = upload(req.files, res, req.body.name, "product");
+    const img = upload(req.files.img, res, req.body.name, "product");
     let product = new Product({
       name: req.body.name,
       description: req.body.description,
       category: req.body.category,
       img: img,
+      price: req.body.price,
       slug: urlSlug(req.body.name, {
         transformer: urlSlug.transformers.uppercase,
       }),
@@ -41,32 +59,49 @@ const create = async (req, res) => {
 
     await product.save();
 
-    res.json({
-      data: product,
-    });
+    success(res, "Has been saved successfully", 201, product);
   } catch (err) {
-    res.status(400).json(err);
+    error(res, "", 500, err);
   }
 };
 
 const show = async (req, res) => {
   try {
     let id = req.params.id;
-    const product = await Product.findById(id).populate('stocks');
+    const product = await Product.findById(id).populate([
+      "category",
+      {
+        path: "stocks",
+        model: "Stock",
+        populate: {
+          path: "stockimages",
+          model: "StockImage",
+        },
+      },
+      {
+        path: "stocks",
+        model: "Stock",
+        populate: {
+          path: "sizes",
+          model: "Size",
+        },
+      },
+    ]);
 
     if (!product) {
-      return res.status(400).json({
-        message: "No se Ha encontrado el recurso",
-      });
+      error(res, "Resource not found", 404, "");
     }
+
     const image = "/api/images/public/product/" + product.img;
 
-    res.json({
-      data: product,
+    const data = {
+      product: product,
       image: image,
-    });
+    };
+
+    success(res, "", 200, data);
   } catch (err) {
-    res.status(400).json(err);
+    error(res, "", 500, err);
   }
 };
 
@@ -74,18 +109,20 @@ const update = async (req, res) => {
   try {
     let id = req.params.id;
     let body = req.body;
+    let img;
 
     const name = body.name;
 
     const updates = {
       name,
       description: body.description,
-      category: body.category
+      category: body.category,
+      available: body.available,
+      price: body.price
     };
 
     if (req.files) {
       let img = upload(req.files.img, res, req.body.name, "product");
-      destroyImage("product", body.oldImage);
       updates.img = img;
     }
 
@@ -96,29 +133,68 @@ const update = async (req, res) => {
     });
 
     if (!product) {
-      return res.status(400).json({
-        message: "No se Ha encontrado el recurso",
-      });
+      destroyImage("product", img);
+      error(res, "Resource not found", 404, "");
     }
 
-    res.json({
-      data: product,
-    });
+    if (img) {
+      destroyImage("product", body.oldImage);
+    }
+
+    success(res, "Has been saved successfully", 201, product);
   } catch (err) {
-    console.log(err);
-    res.status(400).json({
-      err,
-      message: "Ups, Have a problem!",
-    });
+    error(res, "", 500, err);
   }
 };
 
-const destroy = async (req, res) => {};
+const showPublic = async (req, res) => {
+  try {
+    let id = req.params.id;
+    const product = await Product.findById(id).populate([
+      "category",
+      {
+        path: "stocks",
+        model: "Stock",
+        populate: {
+          path: "stockimages",
+          model: "StockImage",
+        },
+      },
+      {
+        path: "stocks",
+        model: "Stock",
+        populate: {
+          path: "sizes",
+          model: "Size",
+        },
+      },
+    ]);
+
+    if (!product) {
+      error(res, "Resource not found", 404, "");
+    }
+
+    const response = {
+      name: product.name,
+      category: product.category.name,
+      stock: product.stocks[0],
+      description: product.description,
+      price: product.price,
+      stocks: product.stocks
+    }
+
+
+    success(res, "", 200, response);
+  } catch (err) {
+    console.log(err)
+    error(res, "", 500, err);
+  }
+};
 
 module.exports = {
   all,
   show,
   update,
   create,
-  destroy,
+  showPublic
 };

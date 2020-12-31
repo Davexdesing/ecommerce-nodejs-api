@@ -3,7 +3,7 @@ var uniqueValidator = require("mongoose-unique-validator");
 
 const productSchema = new Schema({
   name: {
-    required: [true, "El correo es necesario"],
+    required: true,
     trim: true,
     type: String,
     index: true,
@@ -18,6 +18,15 @@ const productSchema = new Schema({
     required: false,
     trim: true,
     type: String,
+  },
+  available: {
+    type: Boolean,
+    default: true
+  },
+  price: {
+    required: false,
+    trim: true,
+    type: Number,
   },
   description: {
     required: false,

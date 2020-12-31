@@ -3,8 +3,7 @@ var uniqueValidator = require("mongoose-unique-validator");
 
 const stockImageSchema = new Schema({
   image: {
-    required: false,
-    trim: true,
+    required: true,
     type: String,
   },
 

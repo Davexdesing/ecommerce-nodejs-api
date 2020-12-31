@@ -1,5 +1,6 @@
 const Category = require("../models/Category");
 const urlSlug = require("url-slug");
+const { success, error } = require('../network/response')
 const { upload, destroyImage } = require("../traits/upload");
 
 const all = async (req, res) => {
@@ -12,18 +13,18 @@ const all = async (req, res) => {
     let category = await Category.find({}).populate('info').skip(from).limit(limited).exec();
     let count = await Category.count();
 
-    res.json({
-      data: category,
-      count: count,
-    });
+    success(res, "", 200, {
+      category: category,
+      count: count
+    })
   } catch (err) {
-    res.status(400).json(err);
+      error(res, "", 500, err)
   }
 };
 
 const create = async (req, res) => {
   try {
-    const img = upload(req.files, res, req.body.name, "category");
+    const img = upload(req.files.img, res, req.body.name, "category");
 
     let category = new Category({
       name: req.body.name,
@@ -35,11 +36,10 @@ const create = async (req, res) => {
 
     await category.save();
 
-    res.json({
-      data: category,
-    });
+    success(res, "Has been saved successfully", 201, category)
+
   } catch (err) {
-    res.status(400).json(err);
+    error(res, "", 500, err)
   }
 };
 
@@ -49,16 +49,12 @@ const show = async (req, res) => {
     let category = await Category.findOne({ name: name });
 
     if (!category) {
-      return res.status(400).json({
-        message: "No se Ha encontrado el recurso",
-      });
+      error(res, "Resource not found", 404, "");
     }
 
-    res.json({
-      data: category,
-    });
+    success(res, "", 200, category)
   } catch (err) {
-    res.status(400).json(err);
+    error(res, "", 500, err)
   }
 };
 
@@ -68,20 +64,19 @@ const edit = async (req, res) => {
     let category = await Category.findById(id).populate('products');
 
     if (!category) {
-      return res.status(400).json({
-        message: "No se Ha encontrado el recurso",
-      });
+      error(res, "Resource not found", 404, "");
     }
+
+
     let data = {
       category,
       image: "/api/images/public/category/" + category.img,
     };
 
-    res.json({
-      data,
-    });
+    success(res, "", 200, data)
+
   } catch (err) {
-    res.status(400).json(err);
+    error(res, "", 500, err)
   }
 };
 
@@ -101,7 +96,6 @@ const update = async (req, res) => {
 
     if (req.files) {
       let img = upload(req.files.img, res, req.body.name, "category");
-      destroyImage("category", body.oldImage);
       updates.img = img;
     }
 
@@ -112,20 +106,16 @@ const update = async (req, res) => {
     });
 
     if (!category) {
-      return res.status(400).json({
-        message: "No se Ha encontrado el recurso",
-      });
+      destroyImage("category", body.img);
+      error(res, "Resource not found", 404, "");
     }
 
-    res.json({
-      data: category,
-    });
+    destroyImage("category", body.oldImage);
+
+    success(res, "Has been saved successfully", 201, category)
+
   } catch (err) {
-    console.log(err);
-    res.status(400).json({
-      err,
-      message: "Ups, Have a problem!",
-    });
+    error(res, "", 500, err)
   }
 };
 

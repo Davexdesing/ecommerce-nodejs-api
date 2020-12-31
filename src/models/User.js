@@ -8,19 +8,24 @@ let role = {
 
 const userSchema = new Schema({
   email: {
-    required: [true, "El correo es necesario"],
+    required: true,
     trim: true,
     unique: true,
     type: String,
     index: true,
   },
   password: {
-    required: [true, "El password es necesario"],
+    required: true,
     trim: true,
     type: String,
   },
-  name: {
-    required: [true, "El nombre es necesario"],
+  firstname: {
+    required: true,
+    trim: true,
+    type: String,
+  },
+  lastname: {
+    required: true,
     trim: true,
     type: String,
   },
@@ -29,7 +34,7 @@ const userSchema = new Schema({
     default: "user",
     enum: role,
   },
-  phone: {
+  birthday: {
     type: String,
     required: true,
     trim: true

@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const _ = require("underscore");
+const { success, error } = require("../network/response");
 
 const all = async (req, res) => {
   try {
@@ -12,12 +13,13 @@ const all = async (req, res) => {
     let user = await User.find({}).skip(from).limit(limited).exec();
     let count = await User.count();
 
-    res.json({
-      data: user,
+    success(res, "", 200, {
+      user: user,
       count: count,
     });
   } catch (err) {
-    res.status(400).json(err);
+    console.error("[error]", err)
+    error(res, "", 500, err);
   }
 };
 
@@ -25,6 +27,9 @@ const create = async (req, res) => {
   try {
     let user = new User({
       name: req.body.name,
+      lastname: req.body.lastname,
+      firstname: req.body.firstname,
+      birthday: req.body.birthday,
       password: bcrypt.hashSync(req.body.password, 10),
       email: req.body.email,
       phone: req.body.phone,
@@ -33,11 +38,10 @@ const create = async (req, res) => {
 
     await user.save();
 
-    res.json({
-      data: user,
-    });
+    success(res, "Has been saved successfully", 201, user);
   } catch (err) {
-    res.status(400).json(err);
+    console.error("[error]", err)
+    error(res, "", 500, err);
   }
 };
 
@@ -46,11 +50,14 @@ const show = async (req, res) => {
     let id = req.params.id;
     let user = await User.findById(id);
 
-    res.json({
-      data: user,
-    });
+    if (!user) {
+      error(res, "Resource not found", 404, "");
+    }
+
+    success(res, "", 200, user);
   } catch (err) {
-    res.status(400).json(err);
+    console.error("[error]", err)
+    error(res, "", 500, err);
   }
 };
 
@@ -59,7 +66,9 @@ const update = async (req, res) => {
     let id = req.params.id;
 
     const update = {
-      name: req.body.name,
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      birthday: req.body.birthday,
       email: req.body.email,
       phone: req.body.phone,
       role: req.body.role,
@@ -71,24 +80,17 @@ const update = async (req, res) => {
     let user = await User.findByIdAndUpdate(id, update, {
       new: true,
       runValidators: true,
-      context: 'query' 
+      context: "query",
     });
 
     if (!user) {
-      return res.status(400).json({
-        message: "No se Ha encontrado el recurso",
-      });
+      error(res, "Resource not found", 404, "");
     }
 
-    res.json({
-      data: user,
-    });
+    success(res, "Has been saved successfully", 201, user);
   } catch (err) {
-    console.log(err)
-    res.status(400).json({
-      err,
-      message: "Ups, Hava a problem!",
-    });
+    console.error("[error]", err)
+    error(res, "", 500, err);
   }
 };
 

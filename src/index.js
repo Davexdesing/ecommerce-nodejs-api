@@ -28,6 +28,7 @@ app.use('/api/products', productRoute);
 app.use('/api/', loginRoute);
 app.use('/api/images', imageRoute);
 
+
 app.listen(8000, () => {
     console.log('se ha conectado')
 });

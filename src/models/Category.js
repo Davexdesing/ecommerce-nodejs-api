@@ -18,6 +18,12 @@ const categorySchema = new Schema({
     trim: true,
     type: String,
   },
+  parent: {
+    type: Schema.Types.ObjectId,
+    ref: "Category",
+    required: false,
+  },
+  parent: { type: String, ref: 'Category' },
 },  { toJSON: { virtuals: true } });
 
 categorySchema.virtual('products', {

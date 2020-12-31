@@ -1,27 +1,22 @@
 const { Schema, model } = require("mongoose");
 var uniqueValidator = require("mongoose-unique-validator");
 
-const sizeSchema = new Schema({
-  name: {
-    required: [true, "El nombre es necesario"],
-    trim: true,
-    type: String,
-    index: true,
-  },
-  quantity: {
+const MetaProductSchema = new Schema({
+  key: {
     required: true,
-    type: Number,
+    type: String,
   },
+value: {
+    required: true,
+    type: String,
+},
   stock: {
     type: Schema.Types.ObjectId,
     ref: "Stock",
     required: true,
   },
-
 });
 
+MetaProductSchema.plugin(uniqueValidator);
 
-sizeSchema.plugin(uniqueValidator);
-
-
-module.exports = model("Size", sizeSchema);
+module.exports = model("MetaProduct", MetaProductSchema);

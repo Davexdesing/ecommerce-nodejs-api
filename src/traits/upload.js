@@ -1,18 +1,12 @@
 const urlSlug = require("url-slug");
-const path = require('path')
-const fs = require('fs')
-
+const path = require("path");
+const fs = require("fs");
+const { error } = require("../network/response");
 
 const upload = (image, res, name, type) => {
   let imgUrl;
   if (!image) {
-    return res.status(400).json({
-      ok: false,
-      err: {
-        message: "No se ha seleccionado ningún img",
-        name: name
-      },
-    });
+    return error(res, "No image has been selected", 400, "");
   }
 
   let img = image;
@@ -23,13 +17,10 @@ const upload = (image, res, name, type) => {
   let extensionesValidas = ["png", "jpg", "gif", "jpeg"];
 
   if (extensionesValidas.indexOf(extension) < 0) {
-    return res.status(400).json({
-      ok: false,
-      err: {
-        message:
-          "Las extensiones permitidas son " + extensionesValidas.join(", "),
-        ext: extension,
-      },
+    return error(res, "", 400, {
+      message:
+        "Las extensiones permitidas son " + extensionesValidas.join(", "),
+      ext: extension,
     });
   }
 
@@ -42,11 +33,7 @@ const upload = (image, res, name, type) => {
   let nameImg = `${urlName}-${type}-${new Date().getMilliseconds()}.${extension}`;
 
   img.mv(`uploads/${type}/${nameImg}`, (err) => {
-    if (err)
-      return res.status(500).json({
-        ok: false,
-        err,
-      });
+    if (err) return error(res, "", 400, err);
   });
 
   return nameImg;
@@ -54,10 +41,9 @@ const upload = (image, res, name, type) => {
 
 const destroyImage = (type, name) => {
   let pathImagen = path.resolve(__dirname, `../../uploads/${type}/${name}`);
-  console.log(pathImagen)
+  console.log(pathImagen);
   if (fs.existsSync(pathImagen)) {
     fs.unlinkSync(pathImagen);
-   
   }
 };
 
