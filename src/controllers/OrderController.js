@@ -2,9 +2,10 @@ const { success, error } = require("../network/response");
 const Order = require("../models/Order");
 const Stripe = require("stripe");
 const Product = require("../models/Product");
+const { config } = require("../config");
 
 const stripe = new Stripe(
-  "sk_test_51I7Af5DOYORLzGcpl3yeC2UHFL4a6fGWcKV13vTVfcP1UgxpMKKQw10TmapR7WZmY91yyXtYSUoIeLow8VDy41jr00mmGPzOnR"
+  config.stripeSecret
 );
 const get = async (req, res) => {
   try {
