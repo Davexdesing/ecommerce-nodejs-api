@@ -36,7 +36,7 @@ const userSchema = new Schema({
   },
   birthday: {
     type: String,
-    required: true,
+    required: false,
     trim: true
   },
   address: [

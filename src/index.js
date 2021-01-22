@@ -9,6 +9,7 @@ const categoryRoute = require('./routes/category')
 const loginRoute = require('./routes/auth')
 const productRoute = require('./routes/product')
 const imageRoute = require('./routes/images')
+const useOrder = require('./routes/order')
 
 require('./database')
 const accepCors = {
@@ -27,6 +28,7 @@ app.use('/api/categories', categoryRoute);
 app.use('/api/products', productRoute);
 app.use('/api/', loginRoute);
 app.use('/api/images', imageRoute);
+app.use("/api/order", useOrder)
 
 
 app.listen(8000, () => {

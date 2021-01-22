@@ -5,12 +5,14 @@ const verifyAdmin = async (req, res, next) => {
   try {
     if (!req.user.user.id) {
       error(res, "You are not logged in", 401, "");
+      return;
     }
 
     const user = await User.findById(req.user.user.id);
 
     if (user.role !== "admin") {
       error(res, "You are not authorized", 401, "");
+      return;
     }
 
     next();
@@ -20,4 +22,6 @@ const verifyAdmin = async (req, res, next) => {
   }
 };
 
-export default verifyAdmin;
+module.exports = { 
+  verifyAdmin
+}

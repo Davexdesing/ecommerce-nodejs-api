@@ -90,6 +90,7 @@ const show = async (req, res) => {
 
     if (!product) {
       error(res, "Resource not found", 404, "");
+      return;
     }
 
     const image = "/api/images/public/product/" + product.img;
