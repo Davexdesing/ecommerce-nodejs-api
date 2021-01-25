@@ -38,6 +38,11 @@ const productSchema = new Schema({
     ref: "Category",
     required: true,
   },
+  deleted: {
+    required: false,
+    type: Boolean,
+    default: false
+  }
 
 }, { toJSON: { virtuals: true } });
 

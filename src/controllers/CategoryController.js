@@ -11,7 +11,7 @@ const all = async (req, res) => {
     let limited = req.query.limited || 15;
     limited = Number(limited);
     let category = await Category.find({}).populate('info').skip(from).limit(limited).exec();
-    let count = await Category.count();
+    let count = await Category.countDocuments();
 
     success(res, "", 200, {
       category: category,

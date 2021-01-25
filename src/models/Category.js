@@ -23,6 +23,11 @@ const categorySchema = new Schema({
     ref: "Category",
     required: false,
   },
+  deleted: {
+    required: false,
+    type: Boolean,
+    default: false
+  },
   parent: { type: String, ref: 'Category' },
 },  { toJSON: { virtuals: true } });
 
