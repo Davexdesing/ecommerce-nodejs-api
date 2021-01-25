@@ -19,8 +19,11 @@ _The application is built with:_
 - underscore version 1.12.0
 - url-slug version 2.3.2
 
+## Run
+_To run this application, you have to set your own environmental variables. For security reasons, some variables have been hidden from view and used as environmental variables with the help of dotenv package._
+
 ## How to Run
-_These instructions will get you a copy of the project up and running on your local machine for development and testing purposes (Without using Docker-compose).
+_These instructions will get you a copy of the project up and running on your local machine for development and testing purposes (Without using Docker-compose)._
 
 * Install node modules
 
@@ -35,9 +38,9 @@ _These instructions will get you a copy of the project up and running on your lo
 
 ## Docker setup
 
-    ```
+    ```bash 
     docker-compose build
-    ```
+    
 
 * Starting Docker
 

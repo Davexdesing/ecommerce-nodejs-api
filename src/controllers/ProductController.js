@@ -192,10 +192,27 @@ const showPublic = async (req, res) => {
   }
 };
 
+const destroy = async (req,res) => {
+  try{
+
+    let response = await Product.findByIdAndUpdate(id, {
+      deleted: true
+    }, {
+      context: "query",
+    });
+
+    success(res, "", 200, response);
+  }catch(err){
+    console.log(err)
+    error(res, "", 500, err);
+  }
+}
+
 module.exports = {
   all,
   show,
   update,
   create,
-  showPublic
+  showPublic,
+  destroy
 };

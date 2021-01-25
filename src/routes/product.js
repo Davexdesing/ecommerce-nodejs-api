@@ -11,6 +11,7 @@ const { verifyAdmin } = require("../middleware/admin");
 router.get("/", ProductController.all);
 router.post("/", [verifyToken, verifyAdmin], ProductController.create);
 router.put("/:id", [verifyToken, verifyAdmin], ProductController.update);
+router.put("/:id/delete", [verifyToken, verifyAdmin], ProductController.update);
 router.get("/:id", ProductController.show);
 router.get('/public/:id', ProductController.showPublic);
 
