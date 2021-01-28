@@ -10,6 +10,8 @@ yarn-debug.log*
 yarn-error.log*
 /data
 
+/uploads
+
 # local env files
 .env
 
