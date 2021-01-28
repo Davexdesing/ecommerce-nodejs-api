@@ -1,6 +1,6 @@
 
 const seeder = require('mongoose-seed');
-const 
+ 
  
 // Connect to MongoDB via Mongoose
 seeder.connect('mongodb://localhost/sample-dev', function() {

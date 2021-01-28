@@ -1,6 +1,6 @@
 const Category = require("../models/Category");
 const urlSlug = require("url-slug");
-const { success, error } = require('../network/response')
+const { success, error } = require("../network/response");
 const { upload, destroyImage } = require("../traits/upload");
 
 const all = async (req, res) => {
@@ -10,36 +10,46 @@ const all = async (req, res) => {
 
     let limited = req.query.limited || 15;
     limited = Number(limited);
-    let category = await Category.find({}).populate('info').skip(from).limit(limited).exec();
+    let category = await Category.find({})
+      .populate("info")
+      .skip(from)
+      .limit(limited)
+      .exec();
     let count = await Category.countDocuments();
 
     success(res, "", 200, {
       category: category,
-      count: count
-    })
+      count: count,
+    });
   } catch (err) {
-      error(res, "", 500, err)
+    console.log(err);
+    error(res, "", 500, err);
   }
 };
 
 const create = async (req, res) => {
   try {
-    const img = upload(req.files.img, res, req.body.name, "category");
-
-    let category = new Category({
+    const create ={
       name: req.body.name,
-      img: img,
       slug: urlSlug(req.body.name, {
         transformer: urlSlug.transformers.lowercase,
       }),
-    });
+    }
+
+    if(req.files){
+      const img = upload(req.files.img, res, req.body.name, "category");
+      create.img = img
+    }
+    
+
+    let category = new Category(create);
 
     await category.save();
 
-    success(res, "Has been saved successfully", 201, category)
-
+    success(res, "Has been saved successfully", 201, category);
   } catch (err) {
-    error(res, "", 500, err)
+    console.log(err)
+    error(res, "", 500, err);
   }
 };
 
@@ -52,31 +62,29 @@ const show = async (req, res) => {
       error(res, "Resource not found", 404, "");
     }
 
-    success(res, "", 200, category)
+    success(res, "", 200, category);
   } catch (err) {
-    error(res, "", 500, err)
+    error(res, "", 500, err);
   }
 };
 
 const edit = async (req, res) => {
   try {
     let id = req.params.id;
-    let category = await Category.findById(id).populate('products');
+    let category = await Category.findById(id).populate("products");
 
     if (!category) {
       error(res, "Resource not found", 404, "");
     }
-
 
     let data = {
       category,
       image: "/api/images/public/category/" + category.img,
     };
 
-    success(res, "", 200, data)
-
+    success(res, "", 200, data);
   } catch (err) {
-    error(res, "", 500, err)
+    error(res, "", 500, err);
   }
 };
 
@@ -112,10 +120,9 @@ const update = async (req, res) => {
 
     destroyImage("category", body.oldImage);
 
-    success(res, "Has been saved successfully", 201, category)
-
+    success(res, "Has been saved successfully", 201, category);
   } catch (err) {
-    error(res, "", 500, err)
+    error(res, "", 500, err);
   }
 };
 
