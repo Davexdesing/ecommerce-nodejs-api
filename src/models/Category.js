@@ -37,6 +37,13 @@ categorySchema.virtual('products', {
   foreignField: 'category',
   justOne: false // set true for one-to-one relationship
 })
+
+categorySchema.virtual('childs', {
+  ref: 'Category',
+  localField: '_id',
+  foreignField: 'parent',
+  justOne: false // set true for one-to-one relationship
+})
 categorySchema.plugin(uniqueValidator);
 
 module.exports = model("Category", categorySchema);

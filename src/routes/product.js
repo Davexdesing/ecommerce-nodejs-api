@@ -29,5 +29,6 @@ router.delete("/stock/image/:image", [verifyToken, verifyAdmin], ImageStockContr
 //size
 router.post("/stock/:stock/size", [verifyToken, verifyAdmin], SizeController.create);
 router.put("/stock/size/:size",[verifyToken, verifyAdmin], SizeController.update);
+router.delete("/stock/size/:size",[verifyToken, verifyAdmin], SizeController.destroy);
 
 module.exports = router;

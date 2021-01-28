@@ -31,6 +31,7 @@ const create = async (req, res) => {
   try {
     const create ={
       name: req.body.name,
+      parent: req.body.parent,
       slug: urlSlug(req.body.name, {
         transformer: urlSlug.transformers.lowercase,
       }),
@@ -56,7 +57,7 @@ const create = async (req, res) => {
 const show = async (req, res) => {
   try {
     let name = req.params.name;
-    let category = await Category.findOne({ name: name });
+    let category = await Category.findOne({ name: name }).populated(["parent"]);
 
     if (!category) {
       error(res, "Resource not found", 404, "");
@@ -71,7 +72,7 @@ const show = async (req, res) => {
 const edit = async (req, res) => {
   try {
     let id = req.params.id;
-    let category = await Category.findById(id).populate("products");
+    let category = await Category.findById(id).populate(["products", 'parent', 'childs']);
 
     if (!category) {
       error(res, "Resource not found", 404, "");
@@ -97,6 +98,7 @@ const update = async (req, res) => {
 
     const updates = {
       name,
+      parent: req.body.parent,
       slug: urlSlug(req.body.name, {
         transformer: urlSlug.transformers.lowercase,
       }),
