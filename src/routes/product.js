@@ -9,9 +9,11 @@ const { verifyAdmin } = require("../middleware/admin");
 
 
 router.get("/", ProductController.all);
+router.get("/admin", ProductController.allAdmin);
 router.post("/", [verifyToken, verifyAdmin], ProductController.create);
 router.put("/:id", [verifyToken, verifyAdmin], ProductController.update);
-router.put("/:id/delete", [verifyToken, verifyAdmin], ProductController.update);
+router.put("/:id/delete", [verifyToken, verifyAdmin], ProductController.destroy);
+router.put("/:id/activate", [verifyToken, verifyAdmin], ProductController.backActivate);
 router.get("/:id", ProductController.show);
 router.get('/public/:id', ProductController.showPublic);
 

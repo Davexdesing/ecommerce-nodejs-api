@@ -11,6 +11,50 @@ const all = async (req, res) => {
 
     let limited = req.query.limited || 15;
     limited = Number(limited);
+    let product = await Product.find({
+      deleted: false
+    })
+      .populate([
+        "category",
+        {
+          path: "stocks",
+          model: "Stock",
+          populate: {
+            path: "stockimages",
+            model: "StockImage",
+          },
+        },
+        {
+          path: "stocks",
+          model: "Stock",
+          populate: {
+            path: "sizes",
+            model: "Size",
+          },
+        },
+      ])
+      .skip(from)
+      .limit(limited)
+      .exec();
+    let count = await Product.count();
+
+    success(res, "", 200, {
+      product: product,
+      count: count,
+    });
+  } catch (err) {
+    console.log('[error]', err)
+    error(res, "", 500, err);
+  }
+};
+
+const allAdmin = async (req, res) =>{
+  try {
+    let from = req.query.from || 0;
+    from = Number(from);
+
+    let limited = req.query.limited || 15;
+    limited = Number(limited);
     let product = await Product.find({})
       .populate([
         "category",
@@ -40,8 +84,11 @@ const all = async (req, res) => {
       product: product,
       count: count,
     });
-  } catch (err) {}
-};
+  } catch (err) {
+    console.log('[error]', err)
+    error(res, "", 500, err);
+  }
+}
 
 const create = async (req, res) => {
   try {
@@ -61,6 +108,7 @@ const create = async (req, res) => {
 
     success(res, "Has been saved successfully", 201, product);
   } catch (err) {
+    console.log('[error]', err)
     error(res, "", 500, err);
   }
 };
@@ -195,25 +243,50 @@ const showPublic = async (req, res) => {
 
 const destroy = async (req,res) => {
   try{
+    let id = req.params.id;
 
     let response = await Product.findByIdAndUpdate(id, {
       deleted: true
     }, {
+      new: true,
+      runValidators: false,
       context: "query",
     });
 
     success(res, "", 200, response);
   }catch(err){
-    console.log(err)
+    console.log('[error]', err)
     error(res, "", 500, err);
   }
 }
+  
+  const backActivate = async (req,res) => {
+    try{
+      let id = req.params.id;
+  
+      let response = await Product.findByIdAndUpdate(id, {
+        deleted: false
+      }, {
+        new: true,
+        runValidators: false,
+        context: "query",
+      });
+  
+      success(res, "", 200, response);
+    }catch(err){
+      console.log('[error]', err)
+      error(res, "", 500, err);
+    }
+  }
+
 
 module.exports = {
   all,
+  allAdmin,
   show,
   update,
   create,
   showPublic,
-  destroy
+  destroy,
+  backActivate
 };
