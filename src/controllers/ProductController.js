@@ -181,7 +181,8 @@ const showPublic = async (req, res) => {
       stock: product.stocks[0],
       description: product.description,
       price: product.price,
-      stocks: product.stocks
+      stocks: product.stocks,
+      image: product.img
     }
 
 
