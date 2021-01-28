@@ -9,7 +9,7 @@ const all = async (req, res) => {
     console.log(req.params.id);
 
     const stock = await Stock.find({ product: req.params.id })
-      .populate(["stockimages", "product"])
+      .populate(["stockimages", "product", "sizes"])
       .exec();
 
     success(res, "Has been saved successfully", 200, stock);
