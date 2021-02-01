@@ -34,6 +34,6 @@ app.use("/api/images", imageRoute);
 app.use("/api/order", useOrder);
 app.use("/api/dashboard", dashboardRoute);
 
-app.listen(8000, () => {
+app.listen(config.port, () => {
   console.log("se ha conectado");
 });
