@@ -3,6 +3,7 @@ const urlSlug = require("url-slug");
 const { success, error } = require("../network/response");
 const { upload, destroyImage } = require("../traits/upload");
 
+
 const all = async (req, res) => {
   try {
     let from = req.query.from || 0;
@@ -71,8 +72,8 @@ const show = async (req, res) => {
 
 const edit = async (req, res) => {
   try {
-    let id = req.params.id;
-    let category = await Category.findById(id).populate(["products", 'parent', 'childs']);
+    let id =req.params.id;
+    let category = await Category.findOne({ _id: id }).populate(["products", 'parent', 'childs']);
 
     if (!category) {
       error(res, "Resource not found", 404, "");
@@ -82,9 +83,10 @@ const edit = async (req, res) => {
       category,
       image: "/api/images/public/category/" + category.img,
     };
-
+    
     success(res, "", 200, data);
   } catch (err) {
+    console.log(['[ERROR]', err])
     error(res, "", 500, err);
   }
 };
